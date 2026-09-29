@@ -1,10 +1,19 @@
-// Store each record's title and cover color in a list.
-let records = [
-  { title: "Record One", color: "#e88a9a" },
-  { title: "Record Two", color: "#80bcb0" },
-  { title: "Record Three", color: "#b19ad4" },
-  { title: "Record Four", color: "#f0c987" },
-];
+let cover1;
+let cover2;
+let cover3;
+
+let isPlaying = false;
+let vinylSize = 0;
+let spinAngle = 0;
+
+async function setup() {
+  const canvas = createCanvas(1000, 600);
+  canvas.parent("sketch-holder");
+
+  cover1 = await loadImage("images/KendrickLamar_GoodKidMaadCity.jpg");
+  cover2 = await loadImage("images/Nas_Illmatic.jpg");
+  cover3 = await loadImage("images/PinkFloyd_Animals.jpg");
+}
 
 // Create the 1000-by-600 drawing canvas once when the sketch starts.
 function setup() {
@@ -24,9 +33,9 @@ function draw() {
 
   // Three record covers
   fill("#2a2a2a");
-  rect(60, 350, 140, 140);
-  rect(100, 350, 140, 140);
-  rect(140, 350, 140, 140);
+  image(cover1, 60, 350, 140, 140);
+  image(cover2, 100, 350, 140, 140);
+  image(cover3, 140, 350, 140, 140);
   rect(180, 350, 140, 140);
   rect(220, 350, 140, 140);
   rect(260, 350, 140, 140);
