@@ -31,7 +31,7 @@ let spinAngle = 0;
 // This is useful because pause is different from stop: pause keeps the song's place, stop resets it.
 let isPaused = false;
 
-// These arrays hold the audio objects for normal album tracks and Jimothy's random picks.
+// These arrays hold the audio objects for tracks in the albums displayed and Jimothy's random picks.
 // Arrays are a good way to store a list of related items such as sounds or images.
 let songs = [];
 let jimothyPicks = [];
@@ -56,7 +56,9 @@ let pickNames = [
 
 let nowPlaying = "";
 
-//REAL DJS PLAY VINYL
+// These variables control the special flying image that appears after a few songs.
+// songsPlayed counts how many songs have started, and the modulo operator (%) checks if the count is divisible by 3.
+// flyX and flyY control the image's position, flySpeed controls how fast it moves, and isFlying turns the animation on and off.
 let songsPlayed = 0;
 let flyingImage;
 let flyX = -180;
@@ -402,28 +404,33 @@ function stopRecord() {
 }
 
 // === Flying image animation ===
-// This function tracks how many songs have played and triggers the flying image every third song.
+// This feature is a small surprise animation: every third song, a message/image flies across the screen.
+// The idea is similar to a game effect: track a count, trigger an event at a certain number, then animate the object by changing its X position.
 function countSongPlay() {
   songsPlayed = songsPlayed + 1;
 
+  // % means modulo. It gives the remainder after division.
+  // Example: 3 % 3 === 0, so every third song triggers the flying image.
   if (songsPlayed % 3 === 0 && isFlying === false) {
     isFlying = true;
     flyX = width + 50; // start off the right side of the screen
     flyY = height / 2 - 80; // center vertically on the canvas
-    flySpeed = -2; // move left
+    flySpeed = -2; // move left by a negative value
   }
 }
 
 // This function draws the flying image across the screen while the animation is active.
+// It works like a small loop: move the image a little each frame, then draw it again at the new position.
 function drawFlyingImage() {
   if (isFlying) {
     flyX = flyX + flySpeed;
 
-    let flyWidth = 400; // make the image bigger
+    let flyWidth = 400; // make the image bigger so it is easier to read
     let flyHeight = (flyWidth * flyingImage.height) / flyingImage.width;
 
     image(flyingImage, flyX, flyY, flyWidth, flyHeight);
 
+    // When the image has moved completely off the left side of the canvas, turn the animation off.
     if (flyX < -flyWidth) {
       isFlying = false;
     }
