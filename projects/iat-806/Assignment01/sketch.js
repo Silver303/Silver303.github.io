@@ -56,6 +56,14 @@ let pickNames = [
 
 let nowPlaying = "";
 
+//REAL DJS PLAY VINYL
+let songsPlayed = 0;
+let flyingImage;
+let flyX = -180;
+let flyY = 100;
+let flySpeed = 3;
+let isFlying = false;
+
 // === Setup: runs once when the sketch starts ===
 // This is the "start-up" section. It creates the canvas and loads all images and sounds
 // before the program starts drawing the scene and playing music.
@@ -74,6 +82,9 @@ async function setup() {
 
   // Load Jimothy's sprite image so it can be drawn on the scene.
   Jimothy = await loadImage("images/Jimothy.png");
+
+  // LOAD VINYL SNOB MESSAGE
+  flyingImage = await loadImage("images/realdjsplayvinyl.png");
 
   // This array stores the actual audio objects for the shelf songs.
   // Each item is a new Audio object tied to a music file.
@@ -167,14 +178,14 @@ function draw() {
   // This is a simple animation pattern: update a position value repeatedly, then draw the character in the updated spot.
   if (JimothyX < targetX) {
     facingRight = true;
-    JimothyX = JimothyX + 2;
+    JimothyX = JimothyX + 4;
 
     if (JimothyX > targetX) {
       JimothyX = targetX;
     }
   } else if (JimothyX > targetX) {
     facingRight = false;
-    JimothyX = JimothyX - 2;
+    JimothyX = JimothyX - 4;
 
     if (JimothyX < targetX) {
       JimothyX = targetX;
@@ -213,6 +224,8 @@ function draw() {
   text(nowPlaying, 50, 555);
 
   pop();
+
+  drawFlyingImage();
 } // draw() ends here
 
 // === Mouse input ===
@@ -240,6 +253,8 @@ function mousePressed() {
     spinAngle = 0;
     isPlaying = true;
     isPaused = false;
+
+    countSongPlay();
 
     return;
   }
@@ -295,11 +310,12 @@ function keyPressed() {
         spinAngle = 0;
       }
 
-      // If no song is loaded yet, choose the selected album's track.
-      // This is a conditional statement: only do this when the current song is empty.
+      // If no song is currently playing, start the selected record and update the nowPlaying label.
       if (currentSong === null) {
         currentSong = songs[selectedRecord - 1];
         nowPlaying = "Now Playing: " + songNames[selectedRecord - 1];
+
+        countSongPlay();
       }
 
       currentSong.play().catch(function (error) {
@@ -383,4 +399,33 @@ function stopRecord() {
   isPlaying = false;
   isPaused = false;
   nowPlaying = "";
+}
+
+// === Flying image animation ===
+// This function tracks how many songs have played and triggers the flying image every third song.
+function countSongPlay() {
+  songsPlayed = songsPlayed + 1;
+
+  if (songsPlayed % 3 === 0 && isFlying === false) {
+    isFlying = true;
+    flyX = width + 50; // start off the right side of the screen
+    flyY = height / 2 - 80; // center vertically on the canvas
+    flySpeed = -2; // move left
+  }
+}
+
+// This function draws the flying image across the screen while the animation is active.
+function drawFlyingImage() {
+  if (isFlying) {
+    flyX = flyX + flySpeed;
+
+    let flyWidth = 400; // make the image bigger
+    let flyHeight = (flyWidth * flyingImage.height) / flyingImage.width;
+
+    image(flyingImage, flyX, flyY, flyWidth, flyHeight);
+
+    if (flyX < -flyWidth) {
+      isFlying = false;
+    }
+  }
 }
