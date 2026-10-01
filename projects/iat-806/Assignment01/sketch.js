@@ -54,9 +54,9 @@ async function setup() {
 
   //jimoty's picks audio files
   jimothyPicks = [
-    new Audio("audio/pick1.mp3"),
-    new Audio("audio/pick2.mp3"),
-    new Audio("audio/pick3.mp3"),
+    new Audio("audio/DelanoSmith_Survival_clip.mp3"),
+    new Audio("audio/1morning_Flow_clip.mp3"),
+    new Audio("audio/Hamatsuki_DoomDisco_clip.mp3"),
   ];
 }
 
@@ -155,22 +155,18 @@ function draw() {
 } // draw() ends here
 
 function mousePressed() {
-  // Click Jimothy's pick.// Click Jimothy's pick.
+  // Click Jimothy's pick.
   if (mouseX >= 700 && mouseX <= 940 && mouseY >= 60 && mouseY <= 120) {
     stopRecord();
 
-    // Stop Jimothy wherever he currently is.
     targetX = JimothyX;
-
-    // No shelf album is selected.
     selectedRecord = 0;
 
-    // Choose from Jimothy's separate audio collection.
     let randomIndex = floor(random(jimothyPicks.length));
     currentSong = jimothyPicks[randomIndex];
 
     currentSong.play().catch(function (error) {
-      console.error("Could not play:", currentSong.src, error);
+      console.error("Could not play:", error);
     });
 
     vinylSize = 0;
@@ -181,85 +177,69 @@ function mousePressed() {
     return;
   }
 
-  // Start the vinyl animation.
-  vinylSize = 0;
-  spinAngle = 0;
-  isPlaying = true;
-  isPaused = false;
+  // Click Wu-Tang.
+  if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
+    stopRecord();
+    targetX = 60;
+    selectedRecord = 1;
+  }
 
-  return;
-}
-// Click Wu-Tang.
-if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
-  targetX = 60;
-  selectedRecord = 1;
+  // Click Nas.
+  else if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
+    stopRecord();
+    targetX = 230;
+    selectedRecord = 2;
+  }
 
-  stopRecord();
-}
+  // Click Pink Floyd.
+  else if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
+    stopRecord();
+    targetX = 400;
+    selectedRecord = 3;
+  }
 
-// Click Nas.
-else if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
-  targetX = 230;
-  selectedRecord = 2;
+  // Click ATCQ.
+  else if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
+    stopRecord();
+    targetX = 570;
+    selectedRecord = 4;
+  }
 
-  stopRecord();
-}
-
-// Click Pink Floyd.
-else if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
-  targetX = 400;
-  selectedRecord = 3;
-
-  stopRecord();
-}
-
-// Click ATCQ.
-else if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
-  targetX = 570;
-  selectedRecord = 4;
-
-  stopRecord();
-}
-
-// Click Jeff Mills.
-else if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
-  targetX = 740;
-  selectedRecord = 5;
-
-  stopRecord();
+  // Click Jeff Mills.
+  else if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
+    stopRecord();
+    targetX = 740;
+    selectedRecord = 5;
+  }
 }
 
 function keyPressed() {
   if (key === " ") {
-    // Start only after an album is selected and Jimothy arrives at the album.
     if ((selectedRecord > 0 && JimothyX === targetX) || currentSong !== null) {
-      // Reset the animation when starting a new record.
+      // Reset the vinyl only when starting, not resuming.
+      if (isPlaying === false) {
+        vinylSize = 0;
+        spinAngle = 0;
+      }
+
+      // Choose a shelf song only if no song is already loaded.
       if (currentSong === null) {
         currentSong = songs[selectedRecord - 1];
       }
 
-      // Find and play the selected song. This takes the selected track from the array and stores it in currentSong.
-      // For Nas, the calculation is 2 - 1, so it chooses songs[1].
-      currentSong = songs[selectedRecord - 1];
-
-      //This starts playback. After a pause, it resumes from the paused position.
-      console.log("Trying to play:", currentSong.src);
-
       currentSong.play().catch(function (error) {
-        console.error("Could not play:", currentSong.src, error);
+        console.error("Could not play:", error);
       });
 
       isPlaying = true;
       isPaused = false;
     }
 
-    return false; // Prevent Space from scrolling.
+    return false;
   }
 
   if (key === "p" || key === "P") {
     if (currentSong !== null) {
-      //This pauses playback without returning to the beginning.
-      // currentSong !== null checks that a song exists before trying to pause it.
       currentSong.pause();
       isPaused = true;
     }
