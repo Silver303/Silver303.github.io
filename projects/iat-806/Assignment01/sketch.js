@@ -25,6 +25,7 @@ let isPaused = false;
 
 // assigning audio
 let songs = [];
+let jimothyPicks = [];
 let currentSong = null;
 
 // setup() runs once when the sketch starts.
@@ -50,6 +51,13 @@ async function setup() {
     new Audio("audio/atcq.mp3"),
     new Audio("audio/jeffmills.mp3"),
   ];
+
+  //jimoty's picks audio files
+  jimothyPicks = [
+    new Audio("audio/pick1.mp3"),
+    new Audio("audio/pick2.mp3"),
+    new Audio("audio/pick3.mp3"),
+  ];
 }
 
 // draw() runs repeatedly to display the scene.
@@ -57,8 +65,22 @@ function draw() {
   background("#0b0026");
   noStroke();
 
+  // Draw the random-pick button. JIMOTHY PICKS A RANDOM TRACK.
+  push();
+
+  fill("#1f1f1f");
+  rect(700, 60, 240, 60);
+
+  fill("#8352ff");
+  textFont("Figtree");
+  textSize(22);
+  textAlign(CENTER, CENTER);
+  text("Jimothy's pick", 820, 90);
+
+  pop();
+
   // Draw the shelf.
-  fill("#383838");
+  fill("#1f1f1f");
   rect(50, 500, 900, 20);
 
   // Draw the album covers above the shelf and lift the cover if the mouse hovers over it. && means and: all four comparisons must be true.
@@ -133,55 +155,87 @@ function draw() {
 } // draw() ends here
 
 function mousePressed() {
-  // Click Wu-Tang.
-  if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
-    targetX = 60;
-    selectedRecord = 1;
-
+  // Click Jimothy's pick.// Click Jimothy's pick.
+  if (mouseX >= 700 && mouseX <= 940 && mouseY >= 60 && mouseY <= 120) {
     stopRecord();
+
+    // Stop Jimothy wherever he currently is.
+    targetX = JimothyX;
+
+    // No shelf album is selected.
+    selectedRecord = 0;
+
+    // Choose from Jimothy's separate audio collection.
+    let randomIndex = floor(random(jimothyPicks.length));
+    currentSong = jimothyPicks[randomIndex];
+
+    currentSong.play().catch(function (error) {
+      console.error("Could not play:", currentSong.src, error);
+    });
+
+    vinylSize = 0;
+    spinAngle = 0;
+    isPlaying = true;
+    isPaused = false;
+
+    return;
   }
 
-  // Click Nas.
-  else if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
-    targetX = 230;
-    selectedRecord = 2;
+  // Start the vinyl animation.
+  vinylSize = 0;
+  spinAngle = 0;
+  isPlaying = true;
+  isPaused = false;
 
-    stopRecord();
-  }
+  return;
+}
+// Click Wu-Tang.
+if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
+  targetX = 60;
+  selectedRecord = 1;
 
-  // Click Pink Floyd.
-  else if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
-    targetX = 400;
-    selectedRecord = 3;
+  stopRecord();
+}
 
-    stopRecord();
-  }
+// Click Nas.
+else if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
+  targetX = 230;
+  selectedRecord = 2;
 
-  // Click ATCQ.
-  else if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
-    targetX = 570;
-    selectedRecord = 4;
+  stopRecord();
+}
 
-    stopRecord();
-  }
+// Click Pink Floyd.
+else if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
+  targetX = 400;
+  selectedRecord = 3;
 
-  // Click Jeff Mills.
-  else if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
-    targetX = 740;
-    selectedRecord = 5;
+  stopRecord();
+}
 
-    stopRecord();
-  }
+// Click ATCQ.
+else if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
+  targetX = 570;
+  selectedRecord = 4;
+
+  stopRecord();
+}
+
+// Click Jeff Mills.
+else if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
+  targetX = 740;
+  selectedRecord = 5;
+
+  stopRecord();
 }
 
 function keyPressed() {
   if (key === " ") {
-    // Start only after an album is selected and Jimothy arrives.
-    if (selectedRecord > 0 && JimothyX === targetX) {
+    // Start only after an album is selected and Jimothy arrives at the album.
+    if ((selectedRecord > 0 && JimothyX === targetX) || currentSong !== null) {
       // Reset the animation when starting a new record.
-      if (isPlaying === false) {
-        vinylSize = 0;
-        spinAngle = 0;
+      if (currentSong === null) {
+        currentSong = songs[selectedRecord - 1];
       }
 
       // Find and play the selected song. This takes the selected track from the array and stores it in currentSong.
