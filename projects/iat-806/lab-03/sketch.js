@@ -1,29 +1,38 @@
-// An array is a list. We will put the dance images in this list after loading them.
+// This creates an empty array. An array is a list. We will put the dance images in this list after loading them.
 let frames = [];
 
-// These are practice variables. They store example values, but the animation does not use them yet.
-let myAge = 10;
-let myName = "Afrooz";
-let myStudentsAges = [];
+// These are  variables. They store example values, which we can change later in the program.
 let numFrames = 8;
+
+// create something called afroozX and store the number 500 in it. This is the horizontal position of the dancing character.
+// create something called afroozY and store the number 100 in it. This is the vertical position of the dancing character.
 let afroozX = 500;
 let afroozY = 100;
 let isMoving = false;
 let currentFrame = 0;
 
+//this variable is defined to later hold the sound file.
 let song;
 
 // setup() runs once when the sketch starts.
+// asysnc is used to allow the use of await inside this function.
+//  e.g., await loadImage() and await loadSound() are used to load the images and sound file, before continuing with the rest of the code.
 async function setup() {
   // Make an 800-by-800 pixel drawing area.
   createCanvas(800, 800);
 
+  // "for" loop means to repeat something a certain number of times. In this case, it repeats 8 times, once for each image.
+  // Load each image file and wait for it to finish before continuing.
+  // The image paths are relative to this sketch's index.html file.
+  // start at 0, keep going while i is less than 8, and add 1 to i each time through the loop.
+  // using the loop number to construct file names. This technique is called "string concatenation" and it is used to create a string (text) from other strings and numbers instead of listing them individually.
+
   for (let i = 0; i < numFrames; i++) {
-    // Load each image file and wait for it to finish before continuing.
-    // The image paths are relative to this sketch's index.html file.
     frames[i] = await loadImage("images/dance" + i + ".png");
   }
 
+  //defined it at the top with no variable in it, but now we are assigning it a value, which is the sound file.
+  // The await keyword is used to wait for the sound file to finish loading before continuing with the rest of the code.
   song = await loadSound("audio/billiejean.mp3");
   console.log(frames);
 }
