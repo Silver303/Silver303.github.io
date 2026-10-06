@@ -6,6 +6,12 @@ let myAge = 10;
 let myName = "Afrooz";
 let myStudentsAges = [];
 let numFrames = 8;
+let afroozX = 500;
+let afroozY = 100;
+let isMoving = false;
+let currentFrame = 0;
+
+let song;
 
 // setup() runs once when the sketch starts.
 async function setup() {
@@ -18,23 +24,26 @@ async function setup() {
     frames[i] = await loadImage("images/dance" + i + ".png");
   }
 
-  // Load the image files and wait for each one to finish before continuing.
-  // The image paths are relative to this sketch's index.html file.
-  //frames[0] = await loadImage("images/dance0.png");
-  //frames[1] = await loadImage("images/dance1.png");
-  //frames[2] = await loadImage("images/dance2.png");
-  //frames[3] = await loadImage("images/dance3.png");
-  //frames[4] = await loadImage("images/dance4.png");
-  //frames[5] = await loadImage("images/dance5.png");
-  //frames[6] = await loadImage("images/dance6.png");
-  //frames[7] = await loadImage("images/dance7.png");
-
-  // Print the loaded images in the browser console; useful for checking that loading worked.
+  song = await loadSound("audio/billiejean.mp3");
   console.log(frames);
-
-  // noLoop() would stop draw() from repeating. It is commented out, so the animation keeps running.
-  // noLoop();
 }
+
+// Load the image files and wait for each one to finish before continuing.
+// The image paths are relative to this sketch's index.html file.
+//frames[0] = await loadImage("images/dance0.png");
+//frames[1] = await loadImage("images/dance1.png");
+//frames[2] = await loadImage("images/dance2.png");
+//frames[3] = await loadImage("images/dance3.png");
+//frames[4] = await loadImage("images/dance4.png");
+//frames[5] = await loadImage("images/dance5.png");
+//frames[6] = await loadImage("images/dance6.png");
+//frames[7] = await loadImage("images/dance7.png");
+
+// Print the loaded images in the browser console; useful for checking that loading worked.
+console.log(frames);
+
+// noLoop() would stop draw() from repeating. It is commented out, so the animation keeps running.
+// noLoop();
 
 // draw() repeats continuously after setup(), usually around 60 times per second.
 function draw() {
@@ -57,7 +66,7 @@ function draw() {
   fill("black");
 
   // Choose how many draw() repetitions each animation image stays on screen.
-  let speed = 3;
+  let speed = 4;
 
   // Divide the total number of draw() repetitions into groups of 10.
   let slowFrame = floor(frameCount / speed);
@@ -73,6 +82,28 @@ function draw() {
   // text(index == 0, 500, 140);
   // console.log(index);
 
-  // Draw the selected image at (100, 100). The background() call above clears the previous one first.
-  image(frames[index], 100, 100);
+  if (isMoving) {
+    // Move left.
+    afroozX = afroozX - 2;
+
+    // Change the animation frame.
+    let speed = 4;
+    let slowFrame = floor(frameCount / speed);
+    currentFrame = slowFrame % frames.length;
+
+    if (afroozX < -frames[currentFrame].width) {
+      afroozX = width;
+    }
+  }
+
+  image(frames[currentFrame], afroozX, afroozY);
+}
+
+function mousePressed() {
+  isMoving = !isMoving;
+  if (isMoving) {
+    song.play();
+  } else {
+    song.pause();
+  }
 }
