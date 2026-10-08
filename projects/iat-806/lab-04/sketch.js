@@ -1,8 +1,9 @@
 let frames = [];
 let myAge = 10;
-let myName = "Alireza";
+let myName = "Afrooz Ghadimi";
 let myStudentsAges = [];
 let numFrames = 8;
+let speed = 10;
 
 let firstName = "Afrooz";
 let lastName = "Ghadimi";
@@ -10,7 +11,7 @@ let lastName = "Ghadimi";
 let fullName = firstName + " " + lastName;
 
 async function setup() {
-  createCanvas(800, 420);
+  createCanvas(800, 800);
 
   for (let i = 0; i < numFrames; i++) {
     // let fileName = `dance_frames/dance${i}.png`;
@@ -21,13 +22,53 @@ async function setup() {
 }
 
 function draw() {
-  background(120);
-  fill("black");
+  background("black");
+  fill("white");
   text(fullName, 100, 100);
 
   let speed = 10;
-  let slowFrame = floor(frameCount / speed);
+  //let slowFrame = floor(frameCount / speed);
+  //let index = slowFrame % frames.length;
+  //text(index, 500, 160);
+  //image(frames[index], 100, 100);
+  animate(frames, 3, 50, 400, 250, 350);
+  animate(frames, 5, 200, 300, 250, 450);
+  animate(frames, speed, 350, 250, 250);
+  animate(frames, 12, 500, 50, 250);
+}
+
+function animate(frames, speed, xPosition, yPosition, imageWidth, imageHeight) {
+  //let slowFrame = Math.floor(frameCount / speed);
+  //let index = slowFrame % frames.length;
+  let index = getFrameIndex(speed);
+  let currentFrame = frames[index];
+
+  // get the original width and height of the image
+  let origWidth = currentFrame.width;
+  let origHeight = currentFrame.height;
+  let aspectRatio = origWidth / origHeight;
+
+  // write the original width and height of the image to the canvas for debugging purposes
+  text(origWidth + " " + origHeight, 500, 100);
+
+  // if no imageWidth or imageHeight is provided, then use the original width and height of the image
+  if (imageWidth && !imageHeight) {
+    let scale = imageWidth / origWidth;
+    imageHeight = scale * origHeight;
+  }
+  // if no imageWidth is provided, but imageHeight is provided, then calculate the imageWidth based on the aspect ratio of the original image
+  if (imageHeight && !imageWidth) {
+    let scale = imageHeight / origHeight;
+    imageWidth = scale * origWidth;
+  }
+
+  image(currentFrame, xPosition, yPosition, imageWidth, imageHeight);
+}
+
+// the below function is a version of the code above that is reusable and can be called from multiple places in the code
+
+function getFrameIndex(speed) {
+  let slowFrame = Math.floor(frameCount / speed);
   let index = slowFrame % frames.length;
-  text(index, 500, 160);
-  image(frames[index], 100, 100);
+  return index;
 }
