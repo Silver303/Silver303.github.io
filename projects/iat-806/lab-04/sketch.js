@@ -10,9 +10,16 @@ let lastName = "Ghadimi";
 
 let fullName = firstName + " " + lastName;
 
+let numCols = 8;
+let numRows = 6;
+let colWidth;
+
 async function setup() {
   createCanvas(800, 800);
 
+  colWidth = width / numCols;
+
+  // load the frames of the dancing animation into the frames array
   for (let i = 0; i < numFrames; i++) {
     // let fileName = `dance_frames/dance${i}.png`;
     let fileName = "dance_frames/dance" + i + ".png";
@@ -22,9 +29,13 @@ async function setup() {
 }
 
 function draw() {
-  background("black");
-  fill("white");
-  text(fullName, 100, 100);
+  background("blue");
+
+  // Draw eight randomly flashing blue columns and rows
+  for (let i = 0; i < numCols; i++) {
+    for (let j = 0; j < numRows; j++) fill(40, 0, random(100, 255));
+    rect(i * colWidth, 0, colWidth, height);
+  }
 
   let speed = 10;
   //let slowFrame = floor(frameCount / speed);
