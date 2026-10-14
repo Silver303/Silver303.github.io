@@ -1,7 +1,6 @@
-// --------------------------------------------------
-// ARRAYS
+// ARRAYS ------------------------------------------------
 // Items in these lists must stay in the same order.
-// --------------------------------------------------
+
 let numCols = 10;
 let colWidth;
 
@@ -35,9 +34,7 @@ let songNames = [
 // Horizontal position of each album.
 let albumX = [60, 230, 400, 570, 740];
 
-// --------------------------------------------------
-// VARIABLES
-// --------------------------------------------------
+// VARIABLES ------------------------------------------------
 
 let Jimothy;
 let JimothyX = 60;
@@ -57,9 +54,7 @@ let isPaused = false;
 let vinylSize = 0;
 let spinAngle = 0;
 
-// --------------------------------------------------
-// SETUP: RUNS ONCE
-// --------------------------------------------------
+// SETUP: RUNS ONCE ------------------------------------------------
 
 async function setup() {
   const canvas = createCanvas(1000, 600);
@@ -75,9 +70,7 @@ async function setup() {
   }
 }
 
-// --------------------------------------------------
-// DRAW: RUNS REPEATEDLY
-// --------------------------------------------------
+// DRAW: RUNS REPEATEDLY ------------------------------------------------
 
 function draw() {
   background("#0b0026");
@@ -101,7 +94,7 @@ function draw() {
   textAlign(CENTER, CENTER);
   text("Jimothy's pick", 820, 90);
 
-  // Shelf.
+  // VINYL SHELF ------------------------------------------------
   fill("#1f1f1f");
   rect(50, 500, 900, 20);
 
@@ -115,7 +108,7 @@ function draw() {
   for (let i = 0; i < covers.length; i++) {
     let x = albumX[i];
 
-    // Raise the cover when the mouse is over it.
+    // Raise the cover when the mouse hovers over it.
     if (mouseX >= x && mouseX <= x + 140 && mouseY >= 300 && mouseY <= 490) {
       image(covers[i], x, 300, 140, 140);
     } else {
@@ -142,7 +135,7 @@ function draw() {
     }
   }
 
-  // Draw him directly, without flipping his image.
+  // Drawing Jimothy
   image(Jimothy, JimothyX, JimothyY, 120, 120);
 
   // Freeze the vinyl when the audio finishes.
@@ -156,7 +149,7 @@ function draw() {
     drawVinyl();
   }
 
-  // Track name.
+  // Track name display
   fill("#8352ff");
   noStroke();
   textSize(18);
@@ -164,9 +157,7 @@ function draw() {
   text(nowPlaying, 50, 555);
 }
 
-// --------------------------------------------------
-// MOUSE INPUT
-// --------------------------------------------------
+// MOUSE INPUT ------------------------------------------------
 
 function mousePressed() {
   // Clicking Jimothy's pick chooses a random shelf album.
@@ -197,9 +188,7 @@ function mousePressed() {
   }
 }
 
-// --------------------------------------------------
-// KEYBOARD INPUT
-// --------------------------------------------------
+// KEYBOARD INPUTS ------------------------------------------------
 
 function keyPressed() {
   if (key === " ") {
@@ -236,9 +225,7 @@ function keyPressed() {
   }
 }
 
-// --------------------------------------------------
-// OUR OWN DRAWING FUNCTION
-// --------------------------------------------------
+// DRAWING THE RECORD ------------------------------------------------
 
 function drawVinyl() {
   if (isPaused === false) {
@@ -279,9 +266,7 @@ function drawVinyl() {
   circle(x, y, vinylSize / 15);
 }
 
-// --------------------------------------------------
-// STOP THE PREVIOUS RECORD
-// --------------------------------------------------
+// STOPPING THE PREVIOUS RECORD ------------------------------------------------
 
 function stopRecord() {
   if (currentSong !== null) {
