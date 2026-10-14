@@ -51,7 +51,7 @@ let nowPlaying = "";
 let isPlaying = false;
 let isPaused = false;
 
-let vinylSize = 0;
+let vinylSize = 100;
 let spinAngle = 0;
 
 // SETUP: RUNS ONCE ------------------------------------------------
@@ -202,7 +202,6 @@ function keyPressed() {
 
         nowPlaying = "Now Playing: " + songNames[selectedRecord - 1];
 
-        vinylSize = 0;
         spinAngle = 0;
       }
 
@@ -231,11 +230,6 @@ function keyPressed() {
 
 function drawVinyl() {
   if (isPaused === false) {
-    // Grow until the disc is 100 pixels wide.
-    if (vinylSize < 100) {
-      vinylSize = vinylSize + 5;
-    }
-
     spinAngle = spinAngle + 0.05;
   }
 
