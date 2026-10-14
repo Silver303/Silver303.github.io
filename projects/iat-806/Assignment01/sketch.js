@@ -157,7 +157,7 @@ function draw() {
   }
 
   // Track name.
-  fill("#b7e9ff");
+  fill("#8352ff");
   noStroke();
   textSize(18);
   textAlign(LEFT, CENTER);
