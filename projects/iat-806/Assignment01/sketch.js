@@ -1,44 +1,28 @@
-// These variables store each album cover image so the program can draw them on screen.
-// A pattern like this is useful when you have several similar items (images, buttons, shapes) that need to be managed separately.
-let cover1;
-let cover2;
-let cover3;
-let cover4;
-let cover5;
+// JIMOTHY'S VINYL COLLECTION
+// Arrays and loops replace the repeated code for five albums.
+// Keep your existing HTML, images folder, and audio folder.
 
-// selectedRecord remembers which album Jimothy is standing by.
-// 0 means no album is selected yet. This is a common beginner pattern: keep track of a current state with a variable.
-let selectedRecord = 0;
+// --------------------------------------------------
+// ALBUM ARRAYS
+// --------------------------------------------------
 
-// Jimothy is the character image that will move around the scene.
-let Jimothy;
+// An array is a list. Its first item has index 0.
+// Matching items in these arrays must stay in the same order.
 
-// Jimothy's position and direction on screen.
-// X and Y are coordinates: X is left-right, Y is up-down.
-// targetX is the destination Jimothy is trying to reach.
-let JimothyX = 60;
-let JimothyY = 200;
-let targetX = 60; // where Jimothy wants to walk to
-let facingRight = true;
+let covers = []; // Loaded images will be stored here.
 
-// These variables control the record animation while music is playing.
-// isPlaying tells us whether a track is active, and the size/angle values change every frame to create movement.
-let isPlaying = false;
-let vinylSize = 0;
-let spinAngle = 0;
+let coverFiles = [
+  "images/WuTang_36Chambers.jpeg",
+  "images/Nas_Illmatic.jpg",
+  "images/PinkFloyd_Animals.jpg",
+  "images/ATribeCalledQuest_TheAnthology.jpg",
+  "images/JeffMills_TheBells.jpg",
+];
 
-// isPaused tells us whether the music is temporarily stopped without resetting the track.
-// This is useful because pause is different from stop: pause keeps the song's place, stop resets it.
-let isPaused = false;
+// Each album's horizontal position.
+let albumX = [60, 230, 400, 570, 740];
 
-// These arrays hold the audio objects for tracks in the albums displayed and Jimothy's random picks.
-// Arrays are a good way to store a list of related items such as sounds or images.
-let songs = [];
-let jimothyPicks = [];
-let currentSong = null;
-
-// These are the labels that appear under the record when a song is playing.
-// They are kept in the same order as the songs array so the title matches the correct track.
+// These names match the order of the shelf audio files.
 let songNames = [
   "Wu-Tang Clan - Protect Ya Neck",
   "Nas - NY State of Mind",
@@ -47,18 +31,49 @@ let songNames = [
   "Jeff Mills - The Bells",
 ];
 
-// Titles for the three random tracks, matching jimothyPicks.
+// These names match the order of Jimothy's extra audio files.
 let pickNames = [
   "Delano Smith - Survival",
   "1morning - Flow",
   "Hamatsuki - Doom Disco",
 ];
 
+// --------------------------------------------------
+// VARIABLES: INFORMATION THE PROGRAM REMEMBERS
+// --------------------------------------------------
+
+// 0 means no shelf album is selected.
+// Numbers 1 through 5 represent the five shelf albums.
+let selectedRecord = 0;
+
+let Jimothy;
+
+// Current position and destination are separate.
+// Clicking changes the destination; draw() changes the position.
+let JimothyX = 60;
+let JimothyY = 200;
+let targetX = 60;
+
+// A boolean stores either true or false.
+let facingRight = true;
+
+// These variables control the vinyl's appearance.
+let isPlaying = false;
+let isPaused = false;
+let vinylSize = 0;
+let spinAngle = 0;
+
+// These arrays will hold browser audio objects.
+let songs = [];
+let jimothyPicks = [];
+
+// null means no current audio object.
+let currentSong = null;
+
+// An empty string displays no text.
 let nowPlaying = "";
 
-// These variables control the special flying image that appears after a few songs.
-// songsPlayed counts how many songs have started, and the modulo operator (%) checks if the count is divisible by 3.
-// flyX and flyY control the image's position, flySpeed controls how fast it moves, and isFlying turns the animation on and off.
+// Flying-image variables.
 let songsPlayed = 0;
 let flyingImage;
 let flyX = -180;
@@ -66,30 +81,33 @@ let flyY = 100;
 let flySpeed = 3;
 let isFlying = false;
 
-// === Setup: runs once when the sketch starts ===
-// This is the "start-up" section. It creates the canvas and loads all images and sounds
-// before the program starts drawing the scene and playing music.
-// A good way to think about setup(): it prepares the scene, then draw() keeps updating it.
+// --------------------------------------------------
+// SETUP: RUNS ONCE
+// --------------------------------------------------
+
+// async allows us to use await.
+// await waits for each image-loading operation to finish.
 async function setup() {
   const canvas = createCanvas(1000, 600);
+
+  // Place the canvas inside this element in the HTML.
   canvas.parent("sketch-holder");
 
-  // Load each album cover one by one so the images are ready before we use them.
-  // The await keyword pauses here until each image finishes loading. This prevents errors from drawing pictures too early.
-  cover1 = await loadImage("images/WuTang_36Chambers.jpeg");
-  cover2 = await loadImage("images/Nas_Illmatic.jpg");
-  cover3 = await loadImage("images/PinkFloyd_Animals.jpg");
-  cover4 = await loadImage("images/ATribeCalledQuest_TheAnthology.jpg");
-  cover5 = await loadImage("images/JeffMills_TheBells.jpg");
+  // Load all five covers using one loop.
+  //
+  // let i = 0: begin at the first index.
+  // i < coverFiles.length: continue while i is within the list.
+  // i++: increase i by one after each repetition.
+  for (let i = 0; i < coverFiles.length; i++) {
+    covers[i] = await loadImage(coverFiles[i]);
+  }
 
-  // Load Jimothy's sprite image so it can be drawn on the scene.
   Jimothy = await loadImage("images/Jimothy.png");
 
-  // LOAD VINYL SNOB MESSAGE
   flyingImage = await loadImage("images/realdjsplayvinyl.png");
 
-  // This array stores the actual audio objects for the shelf songs.
-  // Each item is a new Audio object tied to a music file.
+  // new Audio creates a browser audio player for each file.
+  // It does not start playback here.
   songs = [
     new Audio("audio/wutang.mp3"),
     new Audio("audio/nas.mp3"),
@@ -98,8 +116,6 @@ async function setup() {
     new Audio("audio/jeffmills.mp3"),
   ];
 
-  // These are the bonus/random tracks Jimothy can choose.
-  // They are stored in a separate list because they are not the main shelf albums.
   jimothyPicks = [
     new Audio("audio/DelanoSmith_Survival_clip.mp3"),
     new Audio("audio/1morning_Flow_clip.mp3"),
@@ -107,86 +123,69 @@ async function setup() {
   ];
 }
 
-// === Main animation loop ===
-// This runs every frame and redraws the background, shelf, albums, Jimothy, and track text.
-// The draw() function is the heart of a p5.js sketch: it continuously refreshes the screen.
+// --------------------------------------------------
+// DRAW: RUNS REPEATEDLY TO CREATE ANIMATION
+// --------------------------------------------------
+
 function draw() {
+  // Clear the previous frame before drawing the next one.
   background("#0b0026");
   noStroke();
 
-  // Draw the "Jimothy's pick" button near the top right.
-  // This button chooses a random song from the special picks list.
-  // push() and pop() keep drawing settings (such as fill and text settings) from leaking into later shapes.
+  // Draw Jimothy's pick button.
+  // push() saves drawing settings; pop() restores them.
   push();
 
   fill("#1f1f1f");
+
+  // rect(x, y, width, height)
   rect(700, 60, 240, 60);
 
   fill("#8352ff");
   textFont("Figtree");
   textSize(22);
   textAlign(CENTER, CENTER);
+
+  // The text is positioned at the button's centre.
   text("Jimothy's pick", 820, 90);
 
   pop();
 
-  // Draw the shelf where the albums sit.
-  // This is a simple rectangle used as a base for the records/albums.
+  // Draw the shelf.
   fill("#1f1f1f");
   rect(50, 500, 900, 20);
 
-  // === Album hover behavior ===
-  // This section checks where the mouse is.
-  // If the mouse is over an album, that album lifts upward slightly to look like it is being hovered over.
-  // This is a common interactive pattern: compare mouse coordinates with known rectangle boundaries.
+  // Draw every album using one loop.
+  for (let i = 0; i < covers.length; i++) {
+    // Get this album's horizontal position.
+    let x = albumX[i];
 
-  // Wu-Tang
-  if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
-    image(cover1, 60, 300, 140, 140);
-  } else {
-    image(cover1, 60, 350, 140, 140);
+    // && means AND: all four comparisons must be true.
+    // x + 140 is the album's right edge.
+    if (mouseX >= x && mouseX <= x + 140 && mouseY >= 300 && mouseY <= 490) {
+      // Hovered album: draw it higher.
+      image(covers[i], x, 300, 140, 140);
+    } else {
+      // Otherwise, draw it at its resting position.
+      image(covers[i], x, 350, 140, 140);
+    }
   }
 
-  // Nas
-  if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
-    image(cover2, 230, 300, 140, 140);
-  } else {
-    image(cover2, 230, 350, 140, 140);
-  }
-
-  // Pink Floyd
-  if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
-    image(cover3, 400, 300, 140, 140);
-  } else {
-    image(cover3, 400, 350, 140, 140);
-  }
-
-  // ATCQ
-  if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
-    image(cover4, 570, 300, 140, 140);
-  } else {
-    image(cover4, 570, 350, 140, 140);
-  }
-
-  // Jeff Mills
-  if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
-    image(cover5, 740, 300, 140, 140);
-  } else {
-    image(cover5, 740, 350, 140, 140);
-  }
-
-  // === Jimothy movement ===
-  // This keeps Jimothy walking toward his target position every frame until he reaches it.
-  // This is a simple animation pattern: update a position value repeatedly, then draw the character in the updated spot.
+  // Move Jimothy toward his destination.
   if (JimothyX < targetX) {
     facingRight = true;
+
+    // Increasing x moves him right.
     JimothyX = JimothyX + 4;
 
+    // Correct his position if he passes the destination.
     if (JimothyX > targetX) {
       JimothyX = targetX;
     }
   } else if (JimothyX > targetX) {
     facingRight = false;
+
+    // Decreasing x moves him left.
     JimothyX = JimothyX - 4;
 
     if (JimothyX < targetX) {
@@ -194,29 +193,34 @@ function draw() {
     }
   }
 
-  // === Sprite facing and positioning ===
-  // This flips Jimothy left or right based on whether he is moving toward the right or left.
-  // translate() moves the drawing origin so the image appears at Jimothy's new position.
-  // scale(-1, 1) mirrors the image, which is a classic trick for making a character face the other way.
-  push(); // keep these drawing transforms from affecting the album art
-  translate(JimothyX + 60, JimothyY); // translate() moves the drawing origin to Jimothy's horizontal centre.
+  // When JimothyX equals targetX, neither branch runs.
+  // That makes him stop.
+
+  // Draw Jimothy facing the appropriate direction.
+  push();
+
+  // Move the drawing origin to his horizontal centre.
+  // His image is 120 pixels wide, so half is 60.
+  translate(JimothyX + 60, JimothyY);
 
   if (facingRight === false) {
-    scale(-1, 1); // scale(-1, 1) mirrors the drawing horizontally.
+    // Mirror horizontally around the new origin.
+    scale(-1, 1);
   }
 
-  image(Jimothy, -60, 0, 120, 120); // place half of his 120-pixel width on either side of that centre.
-  pop(); // keep these changes from affecting the albums.
+  // Start 60 pixels left of the origin.
+  image(Jimothy, -60, 0, 120, 120);
 
-  // === Vinyl display ===
-  // If a record is playing, draw the spinning vinyl above Jimothy.
-  // Separating pieces of code into helper functions like drawVinyl() makes your program easier to understand and reuse.
+  // Restore the drawing settings and transformations.
+  pop();
+
+  // Keep the vinyl visible while a record is active.
+  // Pausing freezes it but does not hide it.
   if (isPlaying) {
     drawVinyl();
   }
 
-  // Display the current track name below the shelf.
-  // This is a simple text label that tells the player what is currently playing.
+  // Display the track name.
   push();
 
   fill("#8352ff");
@@ -227,30 +231,42 @@ function draw() {
 
   pop();
 
+  // Draw the flying image last so it appears in front.
   drawFlyingImage();
-} // draw() ends here
+}
 
-// === Mouse input ===
-// This section runs when the user clicks the mouse.
-// It handles both the random pick button and the album choices.
-// A common beginner pattern is: check mouse coordinates, then run an action if they fall inside a specific box.
+// --------------------------------------------------
+// MOUSE INPUT
+// --------------------------------------------------
+
 function mousePressed() {
-  // If the user clicks the "Jimothy's pick" button, pick a random song and start it.
-  // The numbers define a rectangle: x from 700 to 940, y from 60 to 120.
+  // Check the button's boundaries:
+  // left = 700; right = 700 + 240 = 940
+  // top = 60; bottom = 60 + 60 = 120
   if (mouseX >= 700 && mouseX <= 940 && mouseY >= 60 && mouseY <= 120) {
     stopRecord();
 
+    // Stop Jimothy wherever he currently is.
     targetX = JimothyX;
+
+    // This track is not linked to a shelf album.
     selectedRecord = 0;
 
+    // random(3) produces a number from 0 up to, excluding, 3.
+    // floor() rounds down, giving an index of 0, 1, or 2.
     let randomIndex = floor(random(jimothyPicks.length));
+
+    // The same index selects matching audio and text.
     currentSong = jimothyPicks[randomIndex];
     nowPlaying = "Now Playing: " + pickNames[randomIndex];
 
+    // Play the audio.
+    // catch() reports a failed playback request.
     currentSong.play().catch(function (error) {
       console.error("Could not play:", error);
     });
 
+    // Start the vinyl animation from the beginning.
     vinylSize = 0;
     spinAngle = 0;
     isPlaying = true;
@@ -258,65 +274,56 @@ function mousePressed() {
 
     countSongPlay();
 
+    // Finish handling this click.
     return;
   }
 
-  // Click the Wu-Tang album.
-  // This is the same pattern repeated for each album: check if the click is inside that album's rectangle and then move Jimothy there.
-  if (mouseX >= 60 && mouseX <= 200 && mouseY >= 300 && mouseY <= 490) {
-    stopRecord();
-    targetX = 60;
-    selectedRecord = 1;
-  }
+  // Check all five albums using one loop.
+  for (let i = 0; i < covers.length; i++) {
+    let x = albumX[i];
 
-  // Click Nas.
-  else if (mouseX >= 230 && mouseX <= 370 && mouseY >= 300 && mouseY <= 490) {
-    stopRecord();
-    targetX = 230;
-    selectedRecord = 2;
-  }
+    if (mouseX >= x && mouseX <= x + 140 && mouseY >= 300 && mouseY <= 490) {
+      stopRecord();
 
-  // Click Pink Floyd.
-  else if (mouseX >= 400 && mouseX <= 540 && mouseY >= 300 && mouseY <= 490) {
-    stopRecord();
-    targetX = 400;
-    selectedRecord = 3;
-  }
+      // Set the destination, not his current position.
+      targetX = x;
 
-  // Click ATCQ.
-  else if (mouseX >= 570 && mouseX <= 710 && mouseY >= 300 && mouseY <= 490) {
-    stopRecord();
-    targetX = 570;
-    selectedRecord = 4;
-  }
+      // Convert array index to album number.
+      // Index 0 becomes album 1; index 1 becomes album 2.
+      selectedRecord = i + 1;
 
-  // Click Jeff Mills.
-  else if (mouseX >= 740 && mouseX <= 880 && mouseY >= 300 && mouseY <= 490) {
-    stopRecord();
-    targetX = 740;
-    selectedRecord = 5;
+      return;
+    }
   }
 }
 
-// === Keyboard controls ===
-// Press the spacebar to play the selected music.
-// Press P to pause the current track.
-// This function listens for keyboard input from the user and reacts to specific keys.
+// --------------------------------------------------
+// KEYBOARD INPUT
+// --------------------------------------------------
+
 function keyPressed() {
+  // === checks equality. " " represents a space.
   if (key === " ") {
+    // Play if:
+    // an album is selected AND Jimothy has arrived,
+    // OR an existing song is available to resume.
+    // || means OR.
     if ((selectedRecord > 0 && JimothyX === targetX) || currentSong !== null) {
-      // If the record is not already spinning, reset the vinyl animation so it starts fresh.
-      // This is important because if you don't reset the size/angle, the animation may continue from the last frame.
+      // Reset only when starting a new record.
       if (isPlaying === false) {
         vinylSize = 0;
         spinAngle = 0;
       }
 
-      // If no song is currently playing, start the selected record and update the nowPlaying label.
+      // Choose a shelf track only when no song is loaded.
+      // This preserves Jimothy's random track when resuming.
       if (currentSong === null) {
+        // Album numbers start at 1; array indices start at 0.
         currentSong = songs[selectedRecord - 1];
+
         nowPlaying = "Now Playing: " + songNames[selectedRecord - 1];
 
+        // Count a new selection, not a pause/resume.
         countSongPlay();
       }
 
@@ -328,72 +335,78 @@ function keyPressed() {
       isPaused = false;
     }
 
+    // Prevent Space from scrolling the page.
     return false;
   }
 
+  // Accept either lowercase or uppercase P.
   if (key === "p" || key === "P") {
+    // Check that an audio object exists.
     if (currentSong !== null) {
+      // Pause keeps the current playback position.
       currentSong.pause();
+
+      // Freeze the vinyl animation too.
       isPaused = true;
     }
   }
 }
 
-// === Vinyl animation ===
-// This function draws and animates the record as it spins while a song is playing.
-// A lot of animation works by changing a number little by little each frame, then redrawing the shape using that new value.
+// --------------------------------------------------
+// VINYL ANIMATION
+// --------------------------------------------------
+
 function drawVinyl() {
-  // Grow into view until the vinyl is 100 pixels wide.
-  // This creates a smooth "appearing" effect instead of snapping instantly into place.
+  // Grow only while unpaused and smaller than 100 pixels.
   if (isPaused === false && vinylSize < 100) {
     vinylSize = vinylSize + 5;
   }
 
   push();
 
-  // Place the vinyl above Jimothy's horizontal centre.
-  // translate() moves the drawing origin to a new spot on the canvas.
+  // Position the record above Jimothy.
   translate(JimothyX + 60, JimothyY - 60);
+
+  // Rotate around that new origin.
+  // p5 uses radians by default.
   rotate(spinAngle);
 
-  // Black vinyl
-  // This creates the main disc shape.
+  // Main disc: circle(x, y, diameter).
   noStroke();
   fill("#151515");
   circle(0, 0, vinylSize);
 
-  // A mark that makes the spinning visible.
-  // This line acts like a groove or marker on the record so the rotation is easier to see.
+  // A mark makes the rotation visible.
   stroke("#888888");
   strokeWeight(2);
   line(0, 0, vinylSize / 3, 0);
 
-  // Centre label
-  // The circle in the middle gives the record a label-like appearance.
+  // Label: its size stays proportional to the disc.
   noStroke();
   fill("#c9c9c9");
   circle(0, 0, vinylSize / 3);
 
-  // Centre hole
-  // This smaller black circle creates the hole in the middle of the vinyl.
+  // Centre hole.
   fill("#151515");
   circle(0, 0, vinylSize / 15);
 
   pop();
 
-  // Rotate the vinyl if it is not paused.
-  // Rotating the angle a little each frame makes the disk appear to spin smoothly.
+  // Changing the angle each frame creates spinning.
   if (isPaused === false) {
     spinAngle = spinAngle + 0.05;
   }
 }
 
-// === Stop / reset playback ===
-// This function pauses the current audio, resets the position, and clears the playing state.
-// A reset function is helpful because it keeps the code organized: instead of repeating the same stop logic many times, we call this function.
+// --------------------------------------------------
+// STOP AND RESET THE CURRENT RECORD
+// --------------------------------------------------
+
 function stopRecord() {
   if (currentSong !== null) {
     currentSong.pause();
+
+    // Return playback to zero seconds.
     currentSong.currentTime = 0;
   }
 
@@ -401,36 +414,52 @@ function stopRecord() {
   isPlaying = false;
   isPaused = false;
   nowPlaying = "";
+
+  // Do not reset isFlying.
+  // An existing flight continues when tracks change.
 }
 
-// === Flying image animation ===
-// This feature is a small surprise animation: every third song, a message/image flies across the screen.
-// The idea is similar to a game effect: track a count, trigger an event at a certain number, then animate the object by changing its X position.
+// --------------------------------------------------
+// COUNT NEW TRACK STARTS
+// --------------------------------------------------
+
 function countSongPlay() {
   songsPlayed = songsPlayed + 1;
 
-  // % means modulo. It gives the remainder after division.
-  // Example: 3 % 3 === 0, so every third song triggers the flying image.
+  // % gives the remainder after division.
+  // 3, 6, 9... leave zero when divided by 3.
+  // Only start a flight if one is not already active.
   if (songsPlayed % 3 === 0 && isFlying === false) {
     isFlying = true;
-    flyX = width + 50; // start off the right side of the screen
-    flyY = height / 2 - 80; // center vertically on the canvas
-    flySpeed = -2; // move left by a negative value
+
+    // Start outside the canvas's right edge.
+    flyX = width + 50;
+
+    // Fixed vertical position: 220 on this canvas.
+    flyY = height / 2 - 80;
+
+    // Negative speed moves the image left.
+    flySpeed = -2;
   }
 }
 
-// This function draws the flying image across the screen while the animation is active.
-// It works like a small loop: move the image a little each frame, then draw it again at the new position.
+// --------------------------------------------------
+// FLYING IMAGE ANIMATION
+// --------------------------------------------------
+
 function drawFlyingImage() {
   if (isFlying) {
+    // Update the position each frame.
     flyX = flyX + flySpeed;
 
-    let flyWidth = 400; // make the image bigger so it is easier to read
+    let flyWidth = 400;
+
+    // Preserve the original image's proportions.
     let flyHeight = (flyWidth * flyingImage.height) / flyingImage.width;
 
     image(flyingImage, flyX, flyY, flyWidth, flyHeight);
 
-    // When the image has moved completely off the left side of the canvas, turn the animation off.
+    // Stop after the entire image leaves the left edge.
     if (flyX < -flyWidth) {
       isFlying = false;
     }
