@@ -2,6 +2,8 @@
 // ARRAYS
 // Items in these lists must stay in the same order.
 // --------------------------------------------------
+let numCols = 10;
+let colWidth;
 
 let covers = [];
 let songs = [];
@@ -61,6 +63,7 @@ let spinAngle = 0;
 
 async function setup() {
   const canvas = createCanvas(1000, 600);
+  colWidth = width / numCols;
   canvas.parent("sketch-holder");
 
   Jimothy = await loadImage("images/Jimothy.png");
@@ -79,6 +82,14 @@ async function setup() {
 function draw() {
   background("#0b0026");
   noStroke();
+
+  // Jeff Mills club version
+  if (selectedRecord === 5 && isPlaying === true && isPaused === false) {
+    for (let i = 0; i < numCols; i++) {
+      fill(40, 0, random(100, 255, 200));
+      rect(i * colWidth, 0, colWidth, height);
+    }
+  }
 
   // Jimothy's pick button.
   fill("#1f1f1f");
@@ -146,7 +157,7 @@ function draw() {
   }
 
   // Track name.
-  fill("#8352ff");
+  fill("#b7e9ff");
   noStroke();
   textSize(18);
   textAlign(LEFT, CENTER);
@@ -253,7 +264,7 @@ function drawVinyl() {
   // PI describes half a turn in radians.
   // Changing both angles moves the groove around the disc.
   noFill();
-  stroke("#777777");
+  stroke(random);
   strokeWeight(2);
 
   arc(x, y, vinylSize * 0.8, vinylSize * 0.8, spinAngle, spinAngle + PI);
