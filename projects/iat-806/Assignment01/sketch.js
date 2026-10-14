@@ -264,7 +264,7 @@ function drawVinyl() {
   // PI describes half a turn in radians.
   // Changing both angles moves the groove around the disc.
   noFill();
-  stroke(random);
+  stroke("#777777");
   strokeWeight(2);
 
   arc(x, y, vinylSize * 0.8, vinylSize * 0.8, spinAngle, spinAngle + PI);
