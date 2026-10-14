@@ -85,21 +85,23 @@ function draw() {
   }
 
   // Jimothy's pick button.
-  fill("#1f1f1f");
-  rect(700, 60, 240, 60);
+  fill("#1c0047");
+  stroke("#654497");
+  rect(50, 60, 240, 60);
 
-  fill("#8352ff");
+  fill("#af9dff");
+  noStroke();
   textFont("Figtree");
   textSize(22);
   textAlign(CENTER, CENTER);
-  text("Jimothy's pick", 820, 90);
+  text("Jimothy's pick", 170, 90);
 
   // VINYL SHELF ------------------------------------------------
   fill("#1f1f1f");
   rect(50, 500, 900, 20);
 
   // A line along the shelf's top edge.
-  stroke("#8352ff");
+  stroke("#af9dff");
   strokeWeight(2);
   line(50, 500, 950, 500);
   noStroke();
@@ -150,7 +152,7 @@ function draw() {
   }
 
   // Track name display
-  fill("#8352ff");
+  fill("#af9dff");
   noStroke();
   textSize(18);
   textAlign(LEFT, CENTER);
@@ -161,7 +163,7 @@ function draw() {
 
 function mousePressed() {
   // Clicking Jimothy's pick chooses a random shelf album.
-  if (mouseX >= 700 && mouseX <= 940 && mouseY >= 60 && mouseY <= 120) {
+  if (mouseX >= 50 && mouseX <= 290 && mouseY >= 60 && mouseY <= 120) {
     stopRecord();
 
     // Choose an index from 0 through 4.
