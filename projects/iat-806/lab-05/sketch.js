@@ -8,8 +8,10 @@ function setup() {
 
 function draw() {
   background(20);
-  myBall.show();
   myBall.move();
+  myBall.show();
+  myBall2.move();
+  myBall2.show();
 }
 // the attributes of the class: Ball, go here.
 class Ball {
