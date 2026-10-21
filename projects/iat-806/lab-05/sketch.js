@@ -1,7 +1,7 @@
 // An array (list) that will hold all the Ball objects.
 let balls = [];
 // The number of balls to create in setup().
-let numberOfBalls = 500;
+let numberOfBalls = 200;
 
 // p5.js calls setup() once when the sketch starts.
 function setup() {
@@ -11,8 +11,8 @@ function setup() {
   // Repeat the loop once for each ball.
   for (let i = 0; i < numberOfBalls; i++) {
     // Start every ball at the center of the canvas.
-    let ballX = 300;
-    let ballY = 300;
+    let ballX = random(width);
+    let ballY = random(height);
     // Turn off outlines for shapes drawn after this call.
     noStroke();
     // Create a color with random red, green, blue, and transparency values.
@@ -31,12 +31,11 @@ function setup() {
 function draw() {
   // Clear the previous frame with a black background.
   background(0);
-  // Visit each Ball object in the array.
+  // Mouse near the top = faster. Near the bottom = slower.
+  let spinSpeed = map(mouseY, 0, height, 0.02, 0.002, true);
+
   for (let ball of balls) {
-    // Move the ball by a random amount of up to 5 pixels on each axis.
-    ball.move(random(0, 5));
-    // Draw the ball at its current position.
-    ball.show();
+    ball.change(spinSpeed);
   }
 }
 
@@ -50,6 +49,22 @@ class Ball {
     this.y = y;
     this.color = c;
     this.r = r;
+    this.angle = random(TWO_PI);
+    this.spiralRadius = random(0, 250);
+
+    // Give each ball a different starting point in its breathing cycle.
+    this.offset = random(TWO_PI);
+
+    // Give each ball its own breathing speed.
+    this.breathSpeed = random(0.015, 0.04);
+  }
+
+  // Update this ball, then draw it.
+  change(byHowMuch) {
+    this.swirl(byHowMuch);
+    this.pulse(10);
+    this.changeColor(0.02);
+    this.show();
   }
 
   // Change the ball's position by a random amount in either direction.
@@ -57,6 +72,39 @@ class Ball {
   move(byHowMuch) {
     this.x += random(-byHowMuch, byHowMuch);
     this.y += random(-byHowMuch, byHowMuch);
+  }
+
+  // Make this ball grow and shrink like it is breathing.
+  pulse(amount) {
+    this.r = 25 + amount * sin(frameCount * this.breathSpeed + this.offset);
+  }
+
+  // Slowly change this ball between purple and pink.
+  changeColor(speed) {
+    let purple = color(130, 60, 230, 100);
+    let blue = color(0, 100, 255, 100);
+
+    let blend = (sin(frameCount * speed) + 1) / 2;
+
+    this.color = lerpColor(purple, blue, blend);
+  }
+
+  // Make this ball spiral outward and restart near the centre.
+  swirl(speed) {
+    // Turn a little farther around the centre.
+    this.angle += speed;
+
+    // Move a little farther away from the centre.
+    this.spiralRadius += 0.3;
+
+    // Restart at the centre when the ball reaches the outer edge.
+    if (this.spiralRadius > 250) {
+      this.spiralRadius = 0;
+    }
+
+    // Calculate the ball's position around the canvas centre.
+    this.x = width / 2 + cos(this.angle) * this.spiralRadius;
+    this.y = height / 2 + sin(this.angle) * this.spiralRadius;
   }
 
   // A method is a function belonging to a class; this one draws the ball.
