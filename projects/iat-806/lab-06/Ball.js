@@ -3,6 +3,8 @@ class Ball {
     // it's like the instance saying, MY X is 400. In Python the keyword is self.x.
     this.x = x;
     this.y = y;
+    this.OriginalColor = c;
+    this.highlightColor = "purple";
     this.color = c;
     // ALSO this is a diameter, not radius.
     // This is our mistake... we should have looked at the documentation.
@@ -16,6 +18,24 @@ class Ball {
     this.move(byHowMuch);
     this.show();
   }
+
+  highlight() {
+    this.color = this.highlightColor;
+  }
+
+  deHighlight() {
+    this.color = this.OriginalColor;
+  }
+
+  // true or false - if a point is inside a circle
+  contains(pointX, pointY) {
+    // this returns true or false
+    let distance = dist(this.x, this.y, pointX, pointY);
+    if (distance < this.r) return true;
+    else return false;
+  }
+
+  //
   move(byHowMuch) {
     // this.x = this.x + random(-5,5)
     this.x += random(-byHowMuch, byHowMuch);
