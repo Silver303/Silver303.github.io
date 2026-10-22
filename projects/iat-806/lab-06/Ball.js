@@ -1,5 +1,5 @@
 class Ball {
-  constructor(x, y, c, r, maxR = 10) {
+  constructor(x, y, c, r, maxR = 30) {
     // it's like the instance saying, MY X is 400. In Python the keyword is self.x.
     this.x = x;
     this.y = y;
@@ -16,9 +16,19 @@ class Ball {
   update(byHowMuch) {
     this.changeSize(byHowMuch);
     this.move(byHowMuch);
-    this.show();
   }
 
+  respond(active) {
+    if (active) this.highlight();
+    else this.deHighlight();
+  }
+
+  isOnBody(mask) {
+    {
+      let pixel = mask.get(floor(this.x), floor(this.y));
+      return;
+    }
+  }
   highlight() {
     this.color = this.highlightColor;
   }
@@ -58,7 +68,7 @@ function createRandomBall() {
   let ballX = random(0, width);
   let ballY = random(0, height);
   let ballC = color(20, 130, 140 + random(-100, 100), 120);
-  let ballR = 10;
+  let ballR = 30;
   let ball = new Ball(ballX, ballY, ballC, ballR);
   return ball;
 }

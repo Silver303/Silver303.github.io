@@ -12,12 +12,14 @@ function setup() {
 }
 
 function draw() {
-  background(120);
+  background(10);
 
   for (let ball of balls) {
     let byHowMuch = 1;
     ball.update(byHowMuch);
     ball.update(2);
+    let active = ball.contains(mouseX, mouseY);
+    ball.respond(active);
   }
 }
 
