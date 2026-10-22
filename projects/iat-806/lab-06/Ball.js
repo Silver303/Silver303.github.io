@@ -1,21 +1,48 @@
+// this is how we define a class
+// attributes
+// methods
+// this is a blueprint for creating stuff.
+// We can create new balls using this.
 class Ball {
-  constructor(x, y, c, r, maxR = 30) {
-    // it's like the instance saying, MY X is 400. In Python the keyword is self.x.
+  // this function is called when an instance of Ball is created.
+  // x ix x position
+  // y is y position
+  // c is color
+  // r is radius
+  // this is the function that is called when you create a new ball or a new instance of this Class.
+  constructor(x, y, fillColor, r) {
     this.x = x;
     this.y = y;
-    this.OriginalColor = c;
-    this.highlightColor = "purple";
-    this.color = c;
-    // ALSO this is a diameter, not radius.
-    // This is our mistake... we should have looked at the documentation.
+
+    this.startFrame = frameCount;
+    this.baseR = r;
     this.r = r;
-    this.maxR = maxR;
-    // TODO: if one of your methods needs a new attribute, create it here.
+    this.fillColor = fillColor;
+    this.defaultStrokeColor = "black";
+    this.highlightColor = "gray";
+    this.showStroke = false;
   }
 
   update(byHowMuch) {
-    this.changeSize(byHowMuch);
     this.move(byHowMuch);
+    this.show();
+  }
+
+  move(byHowMuch) {
+    this.x += random(-byHowMuch, byHowMuch);
+    this.y += random(-byHowMuch, byHowMuch);
+  }
+
+  changeSize(byHowMuch) {
+    this.r = constrain(this.r + random(-byHowMuch, byHowMuch), 2, 10);
+  }
+
+  contains(px, py) {
+    if (dist(this.x, this.y, px, py) < this.r) {
+      return true;
+    } else {
+      return false;
+    }
   }
 
   respond(active) {
@@ -23,52 +50,30 @@ class Ball {
     else this.deHighlight();
   }
 
-  isOnBody(mask) {
-    {
-      let pixel = mask.get(floor(this.x), floor(this.y));
-      return;
-    }
-  }
   highlight() {
-    this.color = this.highlightColor;
+    this.strokeColor = this.highlightColor;
   }
 
   deHighlight() {
-    this.color = this.OriginalColor;
+    this.strokeColor = this.defaultStrokeColor;
   }
 
-  // true or false - if a point is inside a circle
-  contains(pointX, pointY) {
-    // this returns true or false
-    let distance = dist(this.x, this.y, pointX, pointY);
-    if (distance < this.r) return true;
-    else return false;
-  }
-
-  //
-  move(byHowMuch) {
-    // this.x = this.x + random(-5,5)
-    this.x += random(-byHowMuch, byHowMuch);
-    this.y += random(-byHowMuch, byHowMuch);
-  }
-
-  changeSize(byHowMuch) {
-    // we fix the size like this:
-    // the constrain is saying that it shouldn't grow larger than a certain amount.
-    this.r = constrain(this.r + random(-byHowMuch, byHowMuch), 2, this.maxR);
+  isOnBody(mask) {
+    let px = mask.get(floor(this.x), floor(this.y)); // [r, g, b, a]
+    return px[3] < 128; // opaque = body
   }
 
   show() {
-    fill(this.color);
+    fill(this.fillColor);
+    stroke(this.strokeColor);
     circle(this.x, this.y, this.r * 2);
   }
 }
 
-function createRandomBall() {
-  let ballX = random(0, width);
-  let ballY = random(0, height);
-  let ballC = color(20, 130, 140 + random(-100, 100), 120);
-  let ballR = 30;
-  let ball = new Ball(ballX, ballY, ballC, ballR);
-  return ball;
+class FlickerBall extends Ball {
+  respond(active) {
+    super.respond(active);
+    this.fillColor = color(0, 0, 0, 100);
+    this.changeSize(3);
+  }
 }

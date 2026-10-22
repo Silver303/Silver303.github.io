@@ -1,33 +1,89 @@
+// an array to put all the balls in.
 let balls = [];
+// numBalls is written in camelCase.
+// you could also write in camel_case
+// this is the number of balls that you want to create.
+let numBalls = 2500;
+// no color variables, no position variables, they are all defined within the class.
 
-let numBalls = 500;
+let bodySegmentation;
+let video;
+let segmentation;
+
+let options = {
+  maskType: "person",
+};
 
 function setup() {
-  const canvas = createCanvas(600, 600);
-
+  createCanvas(640, 480);
   for (let i = 0; i < numBalls; i++) {
-    let ball = createRandomBall();
-    balls.push(ball);
+    balls.push(createRandomBall());
+  }
+
+  // Create the video
+  video = createCapture(VIDEO);
+  video.size(640, 480);
+  video.hide();
+
+  loadBodySegmentation();
+}
+
+async function loadBodySegmentation() {
+  try {
+    bodySegmentation = await ml5.bodySegmentation(
+      "SelfieSegmentation",
+      options,
+    );
+    bodySegmentation.detectStart(video, gotResults);
+  } catch (error) {
+    console.error("Could not load body segmentation:", error);
   }
 }
 
 function draw() {
-  background(10);
+  background(120);
 
   for (let ball of balls) {
-    let byHowMuch = 1;
-    ball.update(byHowMuch);
-    ball.update(2);
-    let active = ball.contains(mouseX, mouseY);
+    let onBody = segmentation && ball.isOnBody(segmentation.mask);
+
+    let active = ball.contains(mouseX, mouseY) || onBody;
+
     ball.respond(active);
+
+    ball.update(1);
   }
 }
 
+function checkMouseOver() {
+  balls.forEach((ball, i) => {});
+}
+
 function mousePressed() {
-  balls.forEach((ball) => {
-    if (ball.contains(mouseX, mouseY)) {
-      ball.highlight();
-      console.log("Click is inside the ball");
-    }
-  });
+  let i = balls.findLastIndex((ball) => ball.contains(mouseX, mouseY));
+
+  if (i !== -1) {
+    balls.splice(i, 1);
+  } else {
+    let ballC = color(20, 130, 140 + random(-100, 100), 180);
+    balls.push(new Ball(mouseX, mouseY, ballC, 10));
+  }
+}
+
+function createRandomBall() {
+  let ballX = random(0, width);
+  let ballY = random(0, height);
+  let ballC = color(140, 0, 140 + random(-100, 100), 50);
+  let ballR = 5;
+  let ball;
+  if (Math.random() < 0.9) {
+    ball = new Ball(ballX, ballY, ballC, ballR);
+  } else {
+    ball = new FlickerBall(ballX, ballY, ballC, ballR);
+  }
+
+  return ball;
+}
+
+function gotResults(result) {
+  segmentation = result;
 }
