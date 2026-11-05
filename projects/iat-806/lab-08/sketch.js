@@ -32,7 +32,7 @@ async function setup() {
 
 function draw() {
   background(120);
-  image(video, 0, 0);
+  // image(video, 0, 0);
   for (let ball of balls) {
     let onBody = segmentation && ball.isOnBody(segmentation.mask);
 
@@ -49,6 +49,11 @@ function createRandomBall() {
   let ballY = random(0, height);
   let ballC = color(140, 0, 140 + random(-100, 100), 50);
   let ballR = 5;
+  if (Math.random() < 0.5) {
+    return new BubblyBall(ballX, ballY, ballC, ballR);
+  } else if (random() < 0.5) {
+    return new RainbowBallEmoji(ballX, ballY, ballC, ballR);
+  }
   return new Ball(ballX, ballY, ballC, ballR);
 }
 

@@ -67,3 +67,35 @@ class Ball {
     circle(this.x, this.y, this.r * 2);
   }
 }
+
+class BubblyBall extends Ball {
+  respond(active) {
+    //do the thing that the parent class does (Ball)
+    super.respond(active);
+    //then do this - now we can do more things and add more behavior to the respond function
+    // update the size of the ball if it is active
+    this.changeSize(7);
+  }
+}
+
+class RainbowBallEmoji extends Ball {
+  constructor(x, y, fillColor, r) {
+    super(x, y, fillColor, r);
+    this.emojiText = "🌈";
+    this.sizeMultiplier = 5;
+  }
+
+  respond(active) {
+    if (active) {
+      this.sizeMultiplier = 5;
+    } else {
+      this.sizeMultiplier = 10;
+    }
+  }
+
+  show() {
+    textSize(this.r * this.sizeMultiplier);
+    noStroke();
+    text(this.emojiText, this.x, this.y);
+  }
+}
